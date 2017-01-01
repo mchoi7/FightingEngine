@@ -1,7 +1,7 @@
 package environment;
 
 import assist.RenderAssistant;
-import control.Input;
+import control.Controller;
 import control.Controller.Direction;
 import control.Controller.Action;
 import geometry.Box;
@@ -44,6 +44,7 @@ public abstract class Player extends Actor implements Hurtable {
         else vel.addY(-signum(vel.getY()) * fric.getY());
         vel.addX(grav.getX());
         vel.addY(grav.getY());
+        setLast();
         add(vel.getX(), vel.getY());
         imageIndex += imageSpeed;
     }
@@ -56,14 +57,15 @@ public abstract class Player extends Actor implements Hurtable {
             RenderAssistant.drawRect(box, this, g);
     }
 
-    public void command(Input input) {
-        vel.setX(sumTo(vel.getX(), (input.isOn(Direction.LEFT) ? acc.getX() : 0) - (input.isOn(Direction.RIGHT) ? acc.getX() : 0), max.getX()));
-        vel.setY(sumTo(vel.getY(), (input.isOn(Direction.DOWN) ? acc.getY() : 0) - (input.isOn(Direction.UP) ? acc.getY() : 0), max.getY()));
+    public void command(Controller controller) {
+        System.out.println(controller.isOn(Direction.UP));
+        vel.setX(sumTo(vel.getX(), (controller.isOn(Direction.LEFT) ? acc.getX() : 0) - (controller.isOn(Direction.RIGHT) ? acc.getX() : 0), max.getX()));
+        vel.setY(sumTo(vel.getY(), (controller.isOn(Direction.DOWN) ? acc.getY() : 0) - (controller.isOn(Direction.UP) ? acc.getY() : 0), max.getY()));
 
-        if (input.isOn(Action.LMB)) {
+        if (controller.isOn(Action.LMB)) {
             switch (state) {
                 case GND:
-                    switch (input.getMouseDirection()) {
+                    switch (controller.getMouseDirection()) {
                         case UP:
                             gndUp();
                             break;
@@ -79,7 +81,7 @@ public abstract class Player extends Actor implements Hurtable {
                     }
                     break;
                 case RUN:
-                    switch (input.getMouseDirection()) {
+                    switch (controller.getMouseDirection()) {
                         case UP:
                             runUp();
                             break;
@@ -95,7 +97,7 @@ public abstract class Player extends Actor implements Hurtable {
                     }
                     break;
                 case AIR:
-                    switch (input.getMouseDirection()) {
+                    switch (controller.getMouseDirection()) {
                         case UP:
                             airUp();
                             break;

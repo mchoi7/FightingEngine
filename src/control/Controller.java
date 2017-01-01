@@ -18,13 +18,13 @@ public class Controller {
     }
 
     private static final int RESETDELAY = 24;
-    private Map<Direction, Character> keyMapping = new HashMap<>();
-    private Input input;
+    private Map<Direction, KeyState> keyStates;
+    private Map<Direction, Character> keyMapping;
     private Player player;
 
-    public Controller() {
+    Controller() {
         keyMapping = new HashMap<>();
-        input = new Input();
+        keyStates = new HashMap<>();
         mapInput(Direction.UP, 'W');
         mapInput(Direction.DOWN, 'S');
         mapInput(Direction.LEFT, 'D');
@@ -34,23 +34,47 @@ public class Controller {
     void update(GameFrame gameFrame) {
         for(Direction dir : Direction.values()) {
             if (gameFrame.isKeyOn(keyMapping.get(dir))) {
-                if (input.getKeyStates().get(dir) == KeyState.RELEASED) {
-                    input.getKeyStates().put(dir, KeyState.PRESSED);
+                if(keyMapping.get(dir) == 'W')
+                    System.out.println(dir);
+                if (keyStates.get(dir) == KeyState.RELEASED) {
+                    keyStates.put(dir, KeyState.PRESSED);
                     //combo record here
                 } else
-                    input.getKeyStates().put(dir, KeyState.HELD);
+                    keyStates.put(dir, KeyState.HELD);
             } else
-                input.getKeyStates().put(dir, KeyState.RELEASED);
+                keyStates.put(dir, KeyState.RELEASED);
         }
         if (player != null)
-            player.command(input);
+            player.command(this);
     }
 
-    public void mapInput(Direction dir, char ch) {
+    void mapInput(Direction dir, char ch) {
         keyMapping.put(dir, ch);
     }
 
-    public void setPlayer(Player player) {
+    void setPlayer(Player player) {
         this.player = player;
     }
+
+    public boolean isPressed(Direction ctrl) {
+        return keyStates.get(ctrl) == KeyState.PRESSED;
+    }
+
+    public boolean isHeld(Direction ctrl) {
+        return keyStates.get(ctrl) == KeyState.HELD;
+    }
+
+    public boolean isReleased(Direction ctrl) {
+        return keyStates.get(ctrl) == KeyState.RELEASED;
+    }
+
+    public boolean isOn(Direction ctrl) {
+        return keyStates.get(ctrl) != KeyState.RELEASED;
+    }
+
+    public boolean isOn(Action action) { return false; }    // TODO
+
+    public Direction getMouseDirection() {
+        return null;
+    }   // TODO
 }

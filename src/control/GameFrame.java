@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameFrame extends JFrame implements KeyListener, MouseListener, MouseMotionListener {
-    public static final int WIDTH = 1280, HEIGHT = 960;
+    private static final int WIDTH = 1280, HEIGHT = 960;
     public static final Color bg = Color.black;
-    private Map<Integer, Boolean> keyOn;
+    private boolean[] keys = new boolean[1024];
     private boolean mouseOn;
     private Point mouse = new Point(0, 0);
 
@@ -24,11 +24,10 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
         addKeyListener(this);
         addMouseListener(this);
         addMouseListener(this);
-        keyOn = new HashMap<>();
     }
 
     public boolean isKeyOn(int index) {
-        return keyOn.get(index) != null ? keyOn.get(index) : false;
+        return keys[index];
     }
 
     public boolean isMouseOn() {
@@ -43,13 +42,13 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
     }
 
     public void keyPressed(KeyEvent e) {
-        keyOn.put(e.getKeyCode(), true);
-        if (isKeyOn(KeyEvent.VK_ESCAPE))
-            System.exit(0);
+        keys[e.getKeyCode()] = true;
+        //if (isKeyOn(KeyEvent.VK_ESCAPE))
+        //    System.exit(0);
     }
 
     public void keyReleased(KeyEvent e) {
-        keyOn.put(e.getKeyCode(), false);
+        keys[e.getKeyCode()] = false;
     }
 
     public void mouseClicked(MouseEvent e) {
