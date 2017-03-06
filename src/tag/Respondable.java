@@ -1,7 +1,7 @@
 package tag;
 
-public interface Respondable {
-    boolean isColliding(Collidable collidable);
+import geometry.Box;
 
-    void respond(Collidable collidable);
+public interface Respondable {
+    Box getBound();
 }

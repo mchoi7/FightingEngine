@@ -1,42 +1,33 @@
 package geometry;
 
+import static java.lang.Math.*;
+
 public class Point {
-    private static final Point origin = new Point(0, 0);
-    private final double ox, oy;
-    private double x, y;
-    private double lx, ly;
-    private Point link;
+    public static final Point origin = new Point(0, 0), identity = new Point(1, 1);
+    private double x, y, lx, ly;
 
     public Point(double x, double y) {
-        this.x = x;
-        this.y = y;
-        ox = x;
-        oy = y;
-        setLast();
-    }
-
-    public double getOx() {
-        return ox;
-    }
-
-    public double getOy() {
-        return oy;
+        set(x, y);
     }
 
     public double getX() {
-        return link == null ? x : x + link.getX();
+        return x;
     }
 
     public double getY() {
-        return link == null ? y : y + link.getY();
+        return y;
     }
 
-    public double getX(Point tempLink) {
-        return x + tempLink.getX();
+    public double takeX() {
+        lx = x;
+        x = 0;
+        return lx;
     }
 
-    public double getY(Point tempLink) {
-        return y + tempLink.getY();
+    public double takeY() {
+        ly = y;
+        y = 0;
+        return ly;
     }
 
     public double getLx() {
@@ -47,42 +38,43 @@ public class Point {
         return ly;
     }
 
+    public double getDx() {
+        return lx - x;
+    }
+
+    public double getDy() {
+        return ly - y;
+    }
+
     public void set(double x, double y) {
-        setX(x);
-        setY(y);
+        setLast();
+        adjust(x, y);
     }
 
-    public void setX(double x) {
+    public void adjust(double x, double y) {
         this.x = x;
-    }
-
-    public void setY(double y) {
         this.y = y;
     }
 
+    public void mux(double mx, double my) {
+        set(mx * x, my * y);
+    }
+
     public void add(double dx, double dy) {
-        addX(dx);
-        addY(dy);
+        set(x + dx, y + dy);
     }
 
-    public void addX(double dx) {
-        setX(x + dx);
+    public void add(double dx, double dy, double mdx, double mdy) {
+        double fx, fy, sx = x + dx, sy = y + dy;
+        if (abs(sx) <= mdx) fx = x + dx;
+        else fx = signum(sx) * max(min(abs(sx), abs(x)), mdx);
+        if (abs(sy) <= mdy) fy = y + dy;
+        else fy = signum(sy) * max(min(abs(sy), abs(y)), mdy);
+        set(fx, fy);
     }
 
-    public void addY(double dy) {
-        setY(y + dy);
-    }
-
-    public void setLast() {
+    private void setLast() {
         lx = x;
         ly = y;
-    }
-
-    public Point getLink() {
-        return link;
-    }
-
-    public void setLink(Point link) {
-        this.link = link;
     }
 }

@@ -1,16 +1,12 @@
 package geometry;
 
-import java.util.List;
-
 import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-public class Box extends Point {
+/* TODO */
+public class Oval extends Point {
     private Point point;
     private double w, h;
 
-    public Box(double x, double y, double w, double h) {
+    public Oval(double x, double y, double w, double h) {
         super(x, y);
         this.w = w;
         this.h = h;
@@ -32,7 +28,7 @@ public class Box extends Point {
         this.h = h;
     }
 
-    public boolean intersects(Box box) {
-        return 2 * abs(getX() - box.getX()) <= getW() + box.getW() && 2 * abs(getY() - box.getY()) <= getH() + box.getH();
+    public boolean intersects(Oval oval) {
+        return true;
     }
 }

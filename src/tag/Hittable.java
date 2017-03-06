@@ -1,13 +1,18 @@
 package tag;
 
 import geometry.Box;
+import geometry.ComplexBox;
+import geometry.MultiBox;
+import geometry.Point;
 
 import java.util.List;
 
-public interface Hittable {
-    boolean isReady();
-
+public interface Hittable extends Teamable {
     double getDamage();
 
-    List<Box> getBounds();
+    default Point getKnockback() {
+        return Point.origin;
+    }
+
+    ComplexBox getComplexBox();
 }

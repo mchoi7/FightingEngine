@@ -1,54 +1,64 @@
 package control;
 
-import environment.Player;
+import environment.structure.Player;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Controller {
-    public enum Direction {
-        UP, DOWN, LEFT, RIGHT
-    }
+
     public enum Action {
-        SPACE, LMB, RMB
+        RIGHT, UP, LEFT, DOWN, SPACE, LMB, RMB
     }
 
-    public enum KeyState {
+    private enum KeyState {
         PRESSED, HELD, RELEASED
     }
 
-    private static final int RESETDELAY = 24;
-    private Map<Direction, KeyState> keyStates;
-    private Map<Direction, Character> keyMapping;
+    private static final int RESETDELAY = 12;
+    private Map<Action, Integer> keyMapping;
+    private Map<Action, KeyState> keyStates;
+    private List<Action> comboList;
     private Player player;
+    private int comboTimer;
+    private Action mouseDirection;
 
     Controller() {
         keyMapping = new HashMap<>();
         keyStates = new HashMap<>();
-        mapInput(Direction.UP, 'W');
-        mapInput(Direction.DOWN, 'S');
-        mapInput(Direction.LEFT, 'D');
-        mapInput(Direction.RIGHT, 'A');
+        comboList = new ArrayList<>();
+        mapInput(Action.UP, 'W');
+        mapInput(Action.DOWN, 'S');
+        mapInput(Action.LEFT, 'A');
+        mapInput(Action.RIGHT, 'D');
+        mapInput(Action.SPACE, ' ');
+        mapInput(Action.LMB, -1);
+        mapInput(Action.RMB, -2);
     }
 
     void update(GameFrame gameFrame) {
-        for(Direction dir : Direction.values()) {
+
+        mouseDirection = Action.values()[(int) (Math.round(2 * Math.atan2(-gameFrame.getMouse().getY(), gameFrame.getMouse().getX()) / Math.PI) + 4) % 4];
+        for (Action dir : Action.values()) {
             if (gameFrame.isKeyOn(keyMapping.get(dir))) {
-                if(keyMapping.get(dir) == 'W')
-                    System.out.println(dir);
                 if (keyStates.get(dir) == KeyState.RELEASED) {
                     keyStates.put(dir, KeyState.PRESSED);
-                    //combo record here
+                    comboList.add(dir);
+                    comboTimer = RESETDELAY;
                 } else
                     keyStates.put(dir, KeyState.HELD);
             } else
                 keyStates.put(dir, KeyState.RELEASED);
         }
+
+        if(comboTimer <= 0)
+            comboList.clear();
+        comboTimer--;
+
         if (player != null)
             player.command(this);
     }
 
-    void mapInput(Direction dir, char ch) {
+    private void mapInput(Action dir, int ch) {
         keyMapping.put(dir, ch);
     }
 
@@ -56,25 +66,37 @@ public class Controller {
         this.player = player;
     }
 
-    public boolean isPressed(Direction ctrl) {
-        return keyStates.get(ctrl) == KeyState.PRESSED;
+    public boolean isPressed(Action dir) {
+        return keyStates.get(dir) == KeyState.PRESSED;
     }
 
-    public boolean isHeld(Direction ctrl) {
-        return keyStates.get(ctrl) == KeyState.HELD;
+    public boolean isHeld(Action dir) {
+        return keyStates.get(dir) == KeyState.HELD;
     }
 
-    public boolean isReleased(Direction ctrl) {
-        return keyStates.get(ctrl) == KeyState.RELEASED;
+    public boolean isReleased(Action dir) {
+        return keyStates.get(dir) == KeyState.RELEASED;
     }
 
-    public boolean isOn(Direction ctrl) {
-        return keyStates.get(ctrl) != KeyState.RELEASED;
+    public boolean isOn(Action dir) {
+        return !isReleased(dir);
     }
 
-    public boolean isOn(Action action) { return false; }    // TODO
+    public boolean isPerformed(List<Action> combo) {
+        boolean isPerformed = false;
+        if(comboList.size() >= combo.size()) {
+            isPerformed = comboList.subList(0, combo.size()).equals(combo);
+            if (isPerformed)
+                comboList.clear();
+        }
+        return isPerformed;
+    }
 
-    public Direction getMouseDirection() {
-        return null;
-    }   // TODO
+    public List<Action> getComboList() {
+        return comboList;
+    }
+
+    public Action getMouseDirection() {
+        return mouseDirection;
+    }
 }

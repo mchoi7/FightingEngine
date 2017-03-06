@@ -1,6 +1,8 @@
 package visual;
 
+import assist.FileAssistant;
 import geometry.Box;
+import geometry.MultiBox;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,25 +22,15 @@ public class Animation {
         int imageNumber = name.charAt(name.length() - 6) - '0';
         sprites = new Sprite[imageNumber];
         BufferedImage sheet;
-        List<List<Box>> boundsList = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(boundsFile))) {
+        try {
             sheet = ImageIO.read(sheetFile);
-            String line;
-            int i = 0;
-            while ((line = br.readLine()) != null) {
-                List<Box> bounds = new ArrayList<>();
-                for (String boxData : line.split(",")) {
-                    double[] data = Arrays.stream(boxData.split(" ")).mapToDouble(Double::parseDouble).toArray();
-                    bounds.add(new Box(data[0], data[1], data[2], data[3]));
-                }
-                boundsList.add(i++, bounds);
-            }
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
 
         int imageWidth = sheet.getWidth() / imageNumber;
+        List<MultiBox> boundsList = FileAssistant.getBoundsList(boundsFile);
         for (int i = 0; i < imageNumber; i++) {
             BufferedImage image = sheet.getSubimage(i * imageWidth, 0, imageWidth, sheet.getHeight());
             sprites[i] = new Sprite(image, boundsList.get(i));

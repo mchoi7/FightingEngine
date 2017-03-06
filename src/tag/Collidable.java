@@ -1,19 +1,7 @@
 package tag;
 
-import geometry.Box;
-
-import java.util.List;
-
 public interface Collidable {
-    enum Attribute {
-        FIXED, FLUID
-    }
+    boolean isColliding(Respondable respondable);
 
-    Box getBound();
-
-    default List<Box> getBounds() {
-        return null;
-    }
-
-    Attribute getAttribute();
+    void collide(Respondable respondable);
 }
